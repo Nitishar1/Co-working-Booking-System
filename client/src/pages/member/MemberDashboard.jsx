@@ -101,8 +101,12 @@ const MemberDashboard = () => {
     if (selectedStart >= selectedEnd) return 'End time must be after start time';
 
     if (availabilityData.data.maintenance) {
-      const selectedStartDt = new Date(`${selectedDate}T${start}:00`);
-      const selectedEndDt = new Date(`${selectedDate}T${end}:00`);
+      const parts = selectedDate.split('-');
+      const [sh, sm] = start.split(':').map(Number);
+      const [eh, em] = end.split(':').map(Number);
+      
+      const selectedStartDt = new Date(parts[0], parts[1] - 1, parts[2], sh, sm);
+      const selectedEndDt = new Date(parts[0], parts[1] - 1, parts[2], eh, em);
 
       for (const m of availabilityData.data.maintenance) {
         const mStart = new Date(m.startDateTime);
