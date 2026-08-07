@@ -6,7 +6,7 @@ import { Building2, User, Mail, Lock, Loader2, KeyRound } from 'lucide-react';
 
 const RegisterPage = () => {
   const { register: formRegister, handleSubmit, formState: { errors }, getValues } = useForm();
-  const { sendOtp, verifyOtpAndRegister } = useAuth();
+  const { sendOtp, verifyOtpAndRegister, login } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [generalError, setGeneralError] = useState('');
@@ -18,7 +18,9 @@ const RegisterPage = () => {
     setGeneralError('');
     try {
       await sendOtp(data.name, data.email, data.password);
-      setStep(2);
+      // Bypass OTP Step: Auto-login after registration
+      await login(data.email, data.password);
+      navigate('/dashboard');
     } catch (error) {
       setGeneralError(error.message || 'Registration failed');
     } finally {

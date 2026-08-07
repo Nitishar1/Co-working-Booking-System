@@ -21,18 +21,20 @@ const authService = {
     if (existingUser && !existingUser.isVerified) {
       existingUser.name = name;
       existingUser.password = password;
-      existingUser.otpCode = otpCode;
-      existingUser.otpExpiresAt = otpExpiresAt;
+      existingUser.otpCode = undefined;
+      existingUser.otpExpiresAt = undefined;
+      existingUser.isVerified = true; // BYPASS OTP: Auto verify
       await existingUser.save();
     } else {
-      await User.create({ name, email, password, otpCode, otpExpiresAt, isVerified: false });
+      await User.create({ name, email, password, otpCode: undefined, otpExpiresAt: undefined, isVerified: true }); // BYPASS OTP: Auto verify
     }
 
     // Send real email instead of just dev console log
-    const emailService = require('../utils/emailService');
-    await emailService.sendRegistrationOtp(email, name, otpCode);
+    // [DISABLED PER USER REQUEST TO BYPASS OTP FLOW]
+    // const emailService = require('../utils/emailService');
+    // await emailService.sendRegistrationOtp(email, name, otpCode);
 
-    return { message: 'OTP sent successfully to ' + email };
+    return { message: 'Registration successful' };
   },
 
   async verifyOtpAndRegister(email, otpCode) {
