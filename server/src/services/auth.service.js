@@ -28,7 +28,10 @@ const authService = {
       await User.create({ name, email, password, otpCode, otpExpiresAt, isVerified: false });
     }
 
-    console.log(`\n\n[DEV MODE - DEMO INSTEAD OF EMAIL] OTP for ${email}: ${otpCode}\n\n`);
+    // Send real email instead of just dev console log
+    const emailService = require('../utils/emailService');
+    await emailService.sendRegistrationOtp(email, name, otpCode);
+
     return { message: 'OTP sent successfully to ' + email };
   },
 

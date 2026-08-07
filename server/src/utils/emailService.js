@@ -93,6 +93,25 @@ class EmailService {
       <strong>${new Date(booking.bookingDate).toDateString()}</strong> has been <strong>cancelled</strong>.</p>
     `;
     return this._send(user.email, subject, html);
+    }
+    
+  /**
+   * Send registration OTP notification.
+   */
+  async sendRegistrationOtp(email, name, otpCode) {
+    const subject = `🔐 Your Verification Code for CoWork`;
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+        <h2 style="color: #111;">Verify Your Email Address</h2>
+        <p style="color: #555; font-size: 16px;">Hi ${name},</p>
+        <p style="color: #555; font-size: 16px;">Thank you for registering with CoWork! Please use the following One-Time Password (OTP) to verify your account and complete your registration. This code will expire in 10 minutes.</p>
+        <div style="background-color: #f4f4f5; border-radius: 8px; padding: 20px; text-align: center; margin: 30px 0;">
+          <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #000;">${otpCode}</span>
+        </div>
+        <p style="color: #888; font-size: 14px;">If you did not request this, please ignore this email.</p>
+      </div>
+    `;
+    return this._send(email, subject, html);
   }
 }
 

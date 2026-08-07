@@ -141,6 +141,10 @@ const SpaceDetailPage = () => {
               <button disabled className="w-full py-4 px-6 bg-gray-100 text-gray-400 font-bold tracking-wide rounded-xl cursor-not-allowed">
                 Currently Unavailable
               </button>
+            ) : user?.role === 'admin' ? (
+              <button disabled className="w-full py-4 px-6 bg-gray-100 text-gray-400 font-bold tracking-wide rounded-xl cursor-not-allowed">
+                Admins Cannot Book
+              </button>
             ) : user ? (
               <Link
                 to={`/dashboard?space=${space._id}`}

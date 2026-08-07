@@ -12,7 +12,7 @@ const router = express.Router();
 router.use(authenticate);
 
 // Member routes
-router.post('/', authorize(ROLES.MEMBER, ROLES.ADMIN), validate(createBookingSchema), bookingController.createBooking);
+router.post('/', authorize(ROLES.MEMBER), validate(createBookingSchema), bookingController.createBooking);
 router.get('/me', authorize(ROLES.MEMBER, ROLES.ADMIN), bookingController.getMyBookings);
 router.patch('/:id/cancel', validate(cancelBookingSchema), bookingController.cancelBooking);
 
