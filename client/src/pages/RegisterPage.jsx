@@ -129,7 +129,7 @@ const RegisterPage = () => {
               disabled={isLoading}
               className="w-full h-12 mt-4 flex items-center justify-center bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition shadow-lg shadow-gray-900/20 active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100"
             >
-              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Continue to Verification"}
+              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Register & Login"}
             </button>
           </form>
         ) : (
