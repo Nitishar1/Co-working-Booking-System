@@ -7,10 +7,25 @@ const createBookingSchema = Joi.object({
     .pattern(/^[0-9a-fA-F]{24}$/)
     .required()
     .messages({ 'string.pattern.base': 'Invalid space ID', 'any.required': 'Space is required' }),
-  bookingDate: Joi.date().iso().min('now').required().messages({
-    'date.min': 'Booking date cannot be in the past',
-    'any.required': 'Booking date is required',
-  }),
+  bookingDate: Joi.string()
+    .pattern(/^\d{4}-\d{2}-\d{2}$/)
+    .custom((value, helpers) => {
+      const parts = value.split('-');
+      const booking = new Date(parts[0], parts[1] - 1, parts[2]);
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      
+      if (booking < today) {
+        return helpers.error('date.min');
+      }
+      return value;
+    })
+    .required()
+    .messages({
+      'string.pattern.base': 'Booking date must be in YYYY-MM-DD format',
+      'date.min': 'Booking date cannot be in the past',
+      'any.required': 'Booking date is required',
+    }),
   startTime: Joi.string().pattern(timeRegex).required().messages({
     'string.pattern.base': 'Start time must be in HH:MM format',
     'any.required': 'Start time is required',
