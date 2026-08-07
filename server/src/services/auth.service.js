@@ -18,23 +18,27 @@ const authService = {
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); 
 
+    const { generateAccessToken, generateRefreshToken } = require('../utils/tokenUtils');
+    let user;
     if (existingUser && !existingUser.isVerified) {
       existingUser.name = name;
       existingUser.password = password;
       existingUser.otpCode = undefined;
       existingUser.otpExpiresAt = undefined;
       existingUser.isVerified = true; // BYPASS OTP: Auto verify
-      await existingUser.save();
+      user = await existingUser.save();
     } else {
-      await User.create({ name, email, password, otpCode: undefined, otpExpiresAt: undefined, isVerified: true }); // BYPASS OTP: Auto verify
+      user = await User.create({ name, email, password, otpCode: undefined, otpExpiresAt: undefined, isVerified: true }); // BYPASS OTP: Auto verify
     }
 
-    // Send real email instead of just dev console log
-    // [DISABLED PER USER REQUEST TO BYPASS OTP FLOW]
-    // const emailService = require('../utils/emailService');
-    // await emailService.sendRegistrationOtp(email, name, otpCode);
+    const tokenPayload = { userId: user._id, role: user.role };
+    const accessToken = generateAccessToken(tokenPayload);
+    const refreshToken = generateRefreshToken(tokenPayload);
 
-    return { message: 'Registration successful' };
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    return { user: user.toJSON(), accessToken, refreshToken, message: 'Registration successful' };
   },
 
   async verifyOtpAndRegister(email, otpCode) {

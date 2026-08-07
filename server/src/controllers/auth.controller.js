@@ -7,7 +7,11 @@ const authController = {
   sendOtp: asyncHandler(async (req, res) => {
     const result = await authService.sendOtp(req.body);
     res.status(HTTP_STATUS.OK).json(
-      new ApiResponse(HTTP_STATUS.OK, null, result.message)
+      new ApiResponse(HTTP_STATUS.OK, {
+         user: result.user,
+         accessToken: result.accessToken,
+         refreshToken: result.refreshToken
+      }, result.message)
     );
   }),
 

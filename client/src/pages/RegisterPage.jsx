@@ -18,8 +18,6 @@ const RegisterPage = () => {
     setGeneralError('');
     try {
       await sendOtp(data.name, data.email, data.password);
-      // Bypass OTP Step: Auto-login after registration
-      await login(data.email, data.password);
       navigate('/dashboard');
     } catch (error) {
       setGeneralError(error.message || 'Registration failed');

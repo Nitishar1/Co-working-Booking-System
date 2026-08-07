@@ -53,10 +53,21 @@ export const AuthProvider = ({ children }) => {
 
   const sendOtp = async (name, email, password) => {
     try {
-      await api.post('/auth/send-otp', { name, email, password });
-      toast.success('Verification code sent! Check your email.');
+      const res = await api.post('/auth/send-otp', { name, email, password });
+      
+      // Auto-authenticate immediately
+      if (res.data?.user) {
+        const { user, accessToken, refreshToken } = res.data;
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('user', JSON.stringify(user));
+        setUser(user);
+        toast.success('Registration successful! Welcome aboard.');
+      } else {
+        toast.success('Registration completed.');
+      }
     } catch (error) {
-      toast.error(error.message || 'Failed to send OTP');
+      toast.error(error.message || 'Failed to register');
       throw error;
     }
   };
