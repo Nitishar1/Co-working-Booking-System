@@ -93,7 +93,7 @@ const RegisterPage = () => {
                   minLength: { value: 6, message: 'Minimum 6 characters' }
                 })}
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-gray-50 transition-colors"
-                placeholder="••••••••"
+                placeholder="•••••••"
               />
             </div>
             {errors.password && <p className="mt-1 text-sm text-red-500 font-medium">{errors.password.message}</p>}
