@@ -86,6 +86,34 @@ const MemberDashboard = () => {
     setIsBookingModalOpen(true);
   };
 
+  const timeToMinutes = (timeStr) => {
+    if (!timeStr) return 0;
+    const [h, m] = timeStr.split(':').map(Number);
+    return h * 60 + m;
+  };
+
+  const overlapsWithExisting = (start, end) => {
+    if (!start || !end || !selectedDate || !availabilityData?.data?.bookings) return true;
+    
+    const selectedStart = timeToMinutes(start);
+    const selectedEnd = timeToMinutes(end);
+    
+    if (selectedStart >= selectedEnd) return 'End time must be after start time';
+
+    const dayBookings = availabilityData.data.bookings.filter(b => b.bookingDate.split('T')[0] === selectedDate);
+    
+    for (const b of dayBookings) {
+      const existingStart = timeToMinutes(b.startTime);
+      const existingEnd = timeToMinutes(b.endTime);
+      
+      if (selectedStart < existingEnd && selectedEnd > existingStart) {
+        return `This slot overlaps with an existing booking (${b.startTime} - ${b.endTime})`;
+      }
+    }
+    
+    return true;
+  };
+
   const activeBookings = bookingsData?.data?.bookings || [];
   const quickSpaces = spacesData?.data?.spaces || [];
 
@@ -232,7 +260,10 @@ const MemberDashboard = () => {
                      <input 
                        type="time"
                        min={selectedDate === todayLocal ? currentTimeString : undefined}
-                       {...register('startTime', { required: 'Required' })}
+                       {...register('startTime', { 
+                         required: 'Required',
+                         validate: (value) => overlapsWithExisting(value, watch('endTime'))
+                       })}
                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 bg-gray-50 focus:bg-white transition-colors text-gray-900 font-semibold"
                      />
                   </div>
@@ -247,7 +278,10 @@ const MemberDashboard = () => {
                      <input 
                        type="time"
                        min={selectedDate === todayLocal ? (watch('startTime') || currentTimeString) : watch('startTime')}
-                       {...register('endTime', { required: 'Required' })}
+                       {...register('endTime', { 
+                         required: 'Required',
+                         validate: (value) => overlapsWithExisting(watch('startTime'), value)
+                       })}
                        className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 bg-gray-50 focus:bg-white transition-colors text-gray-900 font-semibold"
                      />
                   </div>
