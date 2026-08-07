@@ -93,21 +93,37 @@ const MemberDashboard = () => {
   };
 
   const overlapsWithExisting = (start, end) => {
-    if (!start || !end || !selectedDate || !availabilityData?.data?.bookings) return true;
+    if (!start || !end || !selectedDate || !availabilityData?.data) return true;
     
     const selectedStart = timeToMinutes(start);
     const selectedEnd = timeToMinutes(end);
     
     if (selectedStart >= selectedEnd) return 'End time must be after start time';
 
-    const dayBookings = availabilityData.data.bookings.filter(b => b.bookingDate.split('T')[0] === selectedDate);
-    
-    for (const b of dayBookings) {
-      const existingStart = timeToMinutes(b.startTime);
-      const existingEnd = timeToMinutes(b.endTime);
+    if (availabilityData.data.maintenance) {
+      const selectedStartDt = new Date(`${selectedDate}T${start}:00`);
+      const selectedEndDt = new Date(`${selectedDate}T${end}:00`);
+
+      for (const m of availabilityData.data.maintenance) {
+        const mStart = new Date(m.startDateTime);
+        const mEnd = new Date(m.endDateTime);
+        
+        if (selectedStartDt < mEnd && selectedEndDt > mStart) {
+          return 'Space is under maintenance during this time';
+        }
+      }
+    }
+
+    if (availabilityData.data.bookings) {
+      const dayBookings = availabilityData.data.bookings.filter(b => b.bookingDate.split('T')[0] === selectedDate);
       
-      if (selectedStart < existingEnd && selectedEnd > existingStart) {
-        return `This slot overlaps with an existing booking (${b.startTime} - ${b.endTime})`;
+      for (const b of dayBookings) {
+        const existingStart = timeToMinutes(b.startTime);
+        const existingEnd = timeToMinutes(b.endTime);
+        
+        if (selectedStart < existingEnd && selectedEnd > existingStart) {
+          return `This slot overlaps with an existing booking (${b.startTime} - ${b.endTime})`;
+        }
       }
     }
     
