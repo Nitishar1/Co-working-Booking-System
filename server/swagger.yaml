@@ -1,0 +1,288 @@
+openapi: 3.0.0
+info:
+  title: CoWork API
+  description: Space Booking System API Documentation
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+paths:
+  /auth/send-otp:
+    post:
+      summary: Register and request OTP
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name: { type: string }
+                email: { type: string }
+                password: { type: string, minLength: 6 }
+      responses:
+        200: { description: OTP sent }
+  /auth/verify-otp:
+    post:
+      summary: Verify OTP to complete registration
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, otpCode]
+              properties:
+                email: { type: string }
+                otpCode: { type: string }
+      responses:
+        201: { description: Registration complete }
+  /auth/login:
+    post:
+      summary: Login
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        200: { description: Login successful }
+  /auth/refresh-token:
+    post:
+      summary: Refresh JWT Access Token
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken: { type: string }
+      responses:
+        200: { description: Token refreshed }
+  /auth/me:
+    get:
+      summary: Get current authenticated user profile
+      tags: [Auth]
+      responses:
+        200: { description: Profile returned }
+  /spaces:
+    get:
+      summary: List spaces
+      tags: [Spaces]
+      security: []
+      parameters:
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+      responses:
+        200: { description: List of spaces }
+    post:
+      summary: Create new space (Admin)
+      tags: [Spaces]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                description: { type: string }
+                type: { type: string }
+                capacity: { type: integer }
+                pricePerHour: { type: number }
+                images: { type: array, items: { type: string } }
+      responses:
+        201: { description: Space created }
+  /spaces/{id}:
+    get:
+      summary: Get space details
+      tags: [Spaces]
+      security: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200: { description: Space details }
+    put:
+      summary: Update a space (Admin)
+      tags: [Spaces]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200: { description: Updated }
+    delete:
+      summary: Deactivate a space (Admin)
+      tags: [Spaces]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200: { description: Deleted }
+  /spaces/{id}/availability:
+    get:
+      summary: Get availability mapping (Bookings & Maintenance) for a space
+      tags: [Spaces]
+      security: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+        - in: query
+          name: startDate
+          schema: { type: string }
+      responses:
+        200: { description: List of booked and maintenance times for the space }
+  /bookings:
+    post:
+      summary: Request a new booking
+      tags: [Bookings]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                space: { type: string }
+                bookingDate: { type: string }
+                startTime: { type: string, example: "09:00" }
+                endTime: { type: string, example: "17:00" }
+      responses:
+        201: { description: Booking submitted }
+  /bookings/my-bookings:
+    get:
+      summary: View authenticated user's bookings
+      tags: [Bookings]
+      responses:
+        200: { description: Personal bookings list }
+  /bookings/admin/all:
+    get:
+      summary: View all bookings across the platform (Admin)
+      tags: [Bookings]
+      responses:
+        200: { description: All bookings }
+  /bookings/{id}/approve:
+    patch:
+      summary: Approve booking (Admin)
+      tags: [Bookings]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200: { description: Approved }
+  /bookings/{id}/reject:
+    patch:
+      summary: Reject booking (Admin)
+      tags: [Bookings]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason: { type: string }
+      responses:
+        200: { description: Rejected }
+  /bookings/{id}/cancel:
+    patch:
+      summary: Cancel a pending booking (Member)
+      tags: [Bookings]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200: { description: Cancelled }
+  /maintenance:
+    get:
+      summary: List maintenance windows
+      tags: [Maintenance]
+      responses:
+        200: { description: List of maintenance }
+    post:
+      summary: Schedule a maintenance window (Admin)
+      tags: [Maintenance]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                space: { type: string }
+                startDateTime: { type: string }
+                endDateTime: { type: string }
+                reason: { type: string }
+      responses:
+        201: { description: Scheduled }
+  /maintenance/{id}:
+    put:
+      summary: Reschedule maintenance (Admin)
+      tags: [Maintenance]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        200: { description: Updated }
+    delete:
+      summary: Delete maintenance (Admin)
+      tags: [Maintenance]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        200: { description: Deleted }
