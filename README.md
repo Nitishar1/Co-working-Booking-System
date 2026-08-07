@@ -127,10 +127,12 @@ EMAIL_PORT=587...
 
 ## 📸 Screenshots
 
-*(Replace with actual URLs once deployed)*
-- `Landing Page Placeholder`
-- `User Dashboard Placeholder`
-- `Admin Booking Approvals Placeholder`
+- `Landing Page` <img width="1532" height="830" alt="Screenshot from 2026-08-07 19-30-41" src="https://github.com/user-attachments/assets/fb0a71b2-e33d-4dec-816a-5e5c4dd64c53" />
+
+- `User Dashboard` <img width="1532" height="830" alt="Screenshot from 2026-08-07 19-33-08" src="https://github.com/user-attachments/assets/d1fe11be-4368-43b1-be19-3df26486d330" />
+
+- `Admin Booking Approvals` <img width="1532" height="868" alt="Screenshot from 2026-08-07 19-30-17" src="https://github.com/user-attachments/assets/06a82aa5-09bc-45f3-9da2-daa23cbea45c" />
+
 
 ## 👨‍💻 Tested Configurations
 - Backend framework standard test: Runs normally on standard express environment.
