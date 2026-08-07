@@ -12,7 +12,8 @@ class EmailService {
   }
 
   _init() {
-    if (config.nodeEnv === 'production' && config.email.user) {
+    // Send emails even in development as long as credentials are provided
+    if (config.email.user && config.email.pass) {
       this.transporter = nodemailer.createTransport({
         host: config.email.host,
         port: parseInt(config.email.port, 10),
